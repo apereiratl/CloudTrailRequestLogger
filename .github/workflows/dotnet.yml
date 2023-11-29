@@ -1,0 +1,36 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: .NET
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0.x
+    - name: Restore dependencies
+      run: dotnet restore ./ServiceStack.CloudTrail.RequestLogsFeature/ServiceStack.CloudTrail.RequestLogsFeature/ServiceStack.CloudTrail.RequestLogsFeature.csproj
+    - name: Build
+      run: dotnet build ./ServiceStack.CloudTrail.RequestLogsFeature/ServiceStack.CloudTrail.RequestLogsFeature.sln --no-restore
+    - name: Test
+      run: dotnet test ./ServiceStack.CloudTrail.RequestLogsFeature/ServiceStack.CloudTrail.RequestLogsFeature.sln --no-build --verbosity normal        
+    - name: Publish NuGet
+      uses: brandedoutcast/publish-nuget@v2.5.5
+      with:
+        PROJECT_FILE_PATH: ./ServiceStack.CloudTrail.RequestLogsFeature/ServiceStack.CloudTrail.RequestLogsFeature/ServiceStack.CloudTrail.RequestLogsFeature.csproj        
+        NUGET_KEY: ${{ secrets.NUGET_API_KEY }}
+          
+          
+          
